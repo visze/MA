@@ -1,0 +1,19 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	first_try
+	1
+
+[Sat Jul 11 12:51:24 2020]
+rule first_try:
+    input: Mendelian.txt
+    output: labels.txt
+    jobid: 0
+
+[Sat Jul 11 12:51:24 2020]
+Finished job 0.
+1 of 1 steps (100%) done
+Complete log: /Users/Lusine/Documents/Masterarbeit/Code/Snakemake/.snakemake/log/2020-07-11T125124.481320.snakemake.log

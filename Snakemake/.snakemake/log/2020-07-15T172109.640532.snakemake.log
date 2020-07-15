@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 41 of /Users/Lusine/Documents/Masterarbeit/Code/Snakemake/Snakefile:
+Missing input files for rule run_parSMURF:
+features.txtfolds.txtlabels.txt

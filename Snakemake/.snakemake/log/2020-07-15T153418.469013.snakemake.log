@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 1 of /Users/Lusine/Documents/Masterarbeit/Code/Snakemake/Snakefile:
+Missing input files for rule all:
+predictions.txt

@@ -1,0 +1,69 @@
+rule all:
+	input:
+		'temp.txt'
+
+
+rule get_features:
+	input:
+		'Mendelian.txt'
+	output:
+		'features.txt'
+	shell:
+		"""
+		cut -d$'\t' -f 1-26 < {input} > {output}
+
+		"""
+rule get_folds:
+	input:
+		'Mendelian.txt'
+	output:
+		'folds.txt'
+	shell:
+		"""
+		cut -f27 < {input} > {output}
+		"""
+
+rule get_labels:
+	input:
+		'Mendelian.txt'
+	output:
+		'labels.txt'
+	shell:
+		"""
+		cut -f28 < {input} > {output}
+		"""
+
+rule make_parSMURF:
+	input:
+	
+	output: 		
+		
+	shell:
+		"""
+		cd /Users/Lusine/Documents/Masterarbeit/Code/parSMURF/;
+		mkdir build;
+		cd build;
+		cmake ../src;
+		make -j 4
+		"""
+	
+
+
+rule run_parSMURF:
+	input:
+			'features.txt',
+			'folds.txt',
+			'labels.txt'
+
+	output: 		
+			'temp.txt'
+	shell:
+		"""
+	cd /Users/Lusine/Documents/Masterarbeit/Code/parSMURF/build;
+	./parSMURF1 --cfg ../cfgEx/dataFromFile_test.json  ;
+	cd /Users/Lusine/Documents/Masterarbeit/Code/Snakemake/
+	touch temp.txt > {output} 
+
+		"""
+	
+		
