@@ -1,46 +1,34 @@
 rule all:
 	input:
-		'temp.txt'
+		'/Users/Lusine/Documents/Masterarbeit/Code/MA/parSMURF/Mendelian/predictions_test.txt'
 
+
+FILES = ['features','folds','labels']
 
 rule get_features:
 	input:
 		'Mendelian.txt'
 	output:
-		'features.txt'
+		expand("{file}.txt", file=FILES)
+
 	shell:
 		"""
-		cut -d$'\t' -f 1-26 < {input} > {output}
+		cut -d$'\t' -f 1-26 < {input} > {output[0]};
+		cut -f27 < {input} > {output[1]};
+		cut -f28 < {input} > {output[2]}
 
 		"""
-rule get_folds:
-	input:
-		'Mendelian.txt'
-	output:
-		'folds.txt'
-	shell:
-		"""
-		cut -f27 < {input} > {output}
-		"""
 
-rule get_labels:
-	input:
-		'Mendelian.txt'
-	output:
-		'labels.txt'
-	shell:
-		"""
-		cut -f28 < {input} > {output}
-		"""
 
-rule make_parSMURF:
+
+
+
+rule make_parSMURF_wird_nicht_benutzt:
 	input:
-	
 	output: 		
-		
 	shell:
 		"""
-		cd /Users/Lusine/Documents/Masterarbeit/Code/parSMURF/;
+		cd /Users/Lusine/Documents/Masterarbeit/Code/MA/parSMURF/;
 		mkdir build;
 		cd build;
 		cmake ../src;
@@ -51,18 +39,20 @@ rule make_parSMURF:
 
 rule run_parSMURF:
 	input:
-			'features.txt',
-			'folds.txt',
-			'labels.txt'
+		expand("{file}.txt", file=FILES)
+
 
 	output: 		
-			'temp.txt'
+			'predictions_test.txt'
 	shell:
 		"""
-	cd /Users/Lusine/Documents/Masterarbeit/Code/parSMURF/build;
-	./parSMURF1 --cfg ../cfgEx/dataFromFile_test.json  ;
-	cd /Users/Lusine/Documents/Masterarbeit/Code/Snakemake/
-	touch temp.txt > {output} 
+		dir="/Users/Lusine/Documents/Masterarbeit/Code/MA/";
+	
+		cd $dir$"parSMURF/build";
+		./parSMURF1 --cfg ../cfgEx/dataFromFile_test.json  ;
+
+		cd $dir$"parSMURF/Mendelian";
+		'predictions_test.txt' > {output} 
 
 		"""
 	

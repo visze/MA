@@ -1,0 +1,37 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	get_features
+	1	run_parSMURF
+	3
+
+[Thu Jul 16 15:05:51 2020]
+rule get_features:
+    input: Mendelian.txt
+    output: features.txt, folds.txt, labels.txt
+    jobid: 2
+
+[Thu Jul 16 15:05:51 2020]
+Finished job 2.
+1 of 3 steps (33%) done
+
+[Thu Jul 16 15:05:51 2020]
+rule run_parSMURF:
+    input: features.txt, folds.txt, labels.txt
+    output: temp.txt
+    jobid: 1
+
+Waiting at most 5 seconds for missing files.
+MissingOutputException in line 42 of /Users/Lusine/Documents/Masterarbeit/Code/MA/Snakemake/Snakefile:
+Job completed successfully, but some output files are missing. Missing files after 5 seconds:
+temp.txt
+This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait.
+  File "/Users/Lusine/opt/anaconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 544, in handle_job_success
+  File "/Users/Lusine/opt/anaconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 231, in handle_job_success
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /Users/Lusine/Documents/Masterarbeit/Code/MA/Snakemake/.snakemake/log/2020-07-16T150551.423426.snakemake.log

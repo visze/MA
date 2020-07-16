@@ -1,0 +1,47 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	get_features
+	1	run_parSMURF
+	3
+
+[Thu Jul 16 15:01:27 2020]
+rule get_features:
+    input: Mendelian.txt
+    output: features.txt, folds.txt, labels.txt
+    jobid: 2
+
+[Thu Jul 16 15:01:27 2020]
+Finished job 2.
+1 of 3 steps (33%) done
+
+[Thu Jul 16 15:01:27 2020]
+rule run_parSMURF:
+    input: features.txt, folds.txt, labels.txt
+    output: temp.txt
+    jobid: 1
+
+[Thu Jul 16 15:01:27 2020]
+Error in rule run_parSMURF:
+    jobid: 1
+    output: temp.txt
+    shell:
+        
+	dir=$("/Users/Lusine/Documents/Masterarbeit/Code/MA")
+
+	cd dir + /parSMURF/build;
+
+	./parSMURF1 --cfg ../cfgEx/dataFromFile_test.json  ;
+	cd "$dir"
+	touch temp.txt > temp.txt 
+
+		
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /Users/Lusine/Documents/Masterarbeit/Code/MA/Snakemake/.snakemake/log/2020-07-16T150127.075129.snakemake.log
