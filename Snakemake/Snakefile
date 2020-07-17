@@ -1,59 +1,66 @@
+# COMMENTS!
+
+
 rule all:
 	input:
-		'/Users/Lusine/Documents/Masterarbeit/Code/MA/parSMURF/Mendelian/predictions_test.txt'
+		'output/{data}.txt'
 
 
 FILES = ['features','folds','labels']
 
+rule get_data:
+	output:
+		"input/{data}.rda"
+	shell:
+		"""
+		wget
+		"""
+
+
+rule convert_data:
+	input:
+		"input/{data}.rda"
+	output:
+		"input/{data}.txt"
+	script:
+		"scripts/convert_data.R"
+
 rule get_features:
 	input:
-		'Mendelian.txt'
+		"input/{data}.txt"
 	output:
-		expand("{file}.txt", file=FILES)
-
+		expand("output/{{data}}.{file}.txt", file=FILES)
 	shell:
 		"""
 		cut -d$'\t' -f 1-26 < {input} > {output[0]};
 		cut -f27 < {input} > {output[1]};
 		cut -f28 < {input} > {output[2]}
-
 		"""
 
 
-
-
-
-rule make_parSMURF_wird_nicht_benutzt:
+rule generate_parsmurf_config:
 	input:
-	output: 		
-	shell:
-		"""
-		cd /Users/Lusine/Documents/Masterarbeit/Code/MA/parSMURF/;
-		mkdir build;
-		cd build;
-		cmake ../src;
-		make -j 4
-		"""
-	
+		features="output/{data}.features.txt",
+		folds="output/{data}.folds.txt",
+		labels="output/{data}.labels.txt",
+		scaffold="data/scaffolds.json"
+	output:
+		config="output/{data}.json"
+	params:
+		name="{name}",
+		output="output/{data}.txt"
+	script:
+		"scripts/generate_parsmurf_config.py"
 
+#i=lambda wc: config[wc.run]|['i']
 
 rule run_parSMURF:
 	input:
-		expand("{file}.txt", file=FILES)
-
-
-	output: 		
-			'predictions_test.txt'
+		expand("output/{{data}}.{file}.txt", file=FILES),
+		config="output/{data}.json"
+	output:
+		'output/{data}.txt'
 	shell:
 		"""
-		dir="/Users/Lusine/Documents/Masterarbeit/Code/MA/";
-	
-		cd $dir$"parSMURF/build";
-		./parSMURF1 --cfg ../cfgEx/dataFromFile_test.json  ;
-
-		cd $dir$"parSMURF/Mendelian";
-		'predictions_test.txt' > {output} 
-
+		parSMURF1 --cfg {input.config}
 		"""
-	
-		

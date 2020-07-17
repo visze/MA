@@ -1,3 +1,0 @@
-AttributeError in line 3 of /Users/Lusine/Documents/Masterarbeit/Code/Snakemake/Snakefile:
-'function' object has no attribute 'txt'
-  File "/Users/Lusine/Documents/Masterarbeit/Code/Snakemake/Snakefile", line 3, in <module>
