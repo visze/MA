@@ -1,3 +1,7 @@
 Snakemake --rulegraph labels.txt |dot -Tpng >rulegraph.png 
 -- list-code-changes
 -D > summary.tsv
+
+
+Snakemake -f Mendelian_1-10.result.txt -j1
+

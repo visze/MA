@@ -1,12 +1,15 @@
+
 import json
 
 with open(snakemake.input.scaffold) as json_file:
-    data = json.load(json_file)
-
-    data['data']['dataFile'] = snakemake.input.features
-    data['name'] = snakemake.params.name
-    data['data']['outFile'] = snakemake.params.output
-
+    file = json.load(json_file)
+    
+    file['name'] = snakemake.params.name
+    file['data']['dataFile'] = snakemake.input.features
+    file['data']['labelFile'] = snakemake.input.labels
+    file['data']['foldFile'] = snakemake.input.folds
+    file['data']['outFile'] = 'output/' + snakemake.params.name + '_predictions.txt'
 
 with open(snakemake.output.config, 'w') as outfile:
-    json.dump(data, outfile)
+    json.dump(file, outfile)
+

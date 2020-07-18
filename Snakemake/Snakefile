@@ -1,35 +1,44 @@
-# COMMENTS!
-
-
+FILES = ['features','folds','labels']
 rule all:
 	input:
-		'output/{data}.txt'
-
-
-FILES = ['features','folds','labels']
-
-rule get_data:
-	output:
-		"input/{data}.rda"
+		'output/{data}_predictions.txt'
+	output: 		
+		'{data}.result.txt'
 	shell:
 		"""
-		wget
+		 echo 'Done' >> {wildcards.data}.result.txt > {output} 
 		"""
+rule get_data:
+	input: 
+	output: 
+		"input/{data}.rda"
+	params: 
+		file = lambda wildcards, output: ''.join({wildcards.data}).replace('-',':')
+
+	shell:
+		"""
+		wget http://homes.di.unimi.it/valentini/DATA/Mendelian/{params.file}.rda  -O input/{wildcards.data}.rda 	"""
 
 
+# cannot access snakemake object via snakemake@params[['name']] or input[[1]], hard coded 'input/Mendelian_1-10'
 rule convert_data:
 	input:
-		"input/{data}.rda"
-	output:
-		"input/{data}.txt"
-	script:
-		"scripts/convert_data.R"
+		'input/{data}.rda'
 
-rule get_features:
-	input:
-		"input/{data}.txt"
 	output:
-		expand("output/{{data}}.{file}.txt", file=FILES)
+		'input/{data}.txt'
+	params: 
+		name = 'input/{data}'
+	shell:
+		"Rscript scripts/convert_data.R"
+
+# makes sense to merge with get_data using r
+rule split_data:
+	input:
+		'input/{data}.txt'
+	output:
+		expand('output/{{data}}.{file}.txt', file=FILES)
+
 	shell:
 		"""
 		cut -d$'\t' -f 1-26 < {input} > {output[0]};
@@ -43,24 +52,23 @@ rule generate_parsmurf_config:
 		features="output/{data}.features.txt",
 		folds="output/{data}.folds.txt",
 		labels="output/{data}.labels.txt",
-		scaffold="data/scaffolds.json"
+		scaffold="scaffold.json"
 	output:
 		config="output/{data}.json"
 	params:
-		name="{name}",
-		output="output/{data}.txt"
+		name = '{data}'
 	script:
 		"scripts/generate_parsmurf_config.py"
 
-#i=lambda wc: config[wc.run]|['i']
 
+# set PATH to parSMURF folder with the executable
 rule run_parSMURF:
 	input:
 		expand("output/{{data}}.{file}.txt", file=FILES),
 		config="output/{data}.json"
 	output:
-		'output/{data}.txt'
+		'output/{data}_predictions.txt'
 	shell:
 		"""
 		parSMURF1 --cfg {input.config}
-		"""
+	"""
