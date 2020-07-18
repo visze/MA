@@ -1,1 +1,4 @@
 .snakemake
+.bash_profile
+.DS_Store
+temp.txt
