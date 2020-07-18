@@ -1,4 +1,5 @@
 .snakemake
+.ipynb_checkpoints
 .bash_profile
 .DS_Store
 temp.txt
