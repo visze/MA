@@ -2,12 +2,7 @@ FILES = ['features','folds','labels']
 rule all:
 	input:
 		'output/{data}_predictions.txt'
-	output: 		
-		'{data}.result.txt'
-	shell:
-		"""
-		 echo 'Done' >> {wildcards.data}.result.txt > {output} 
-		"""
+
 rule get_data:
 	input: 
 	output: 
@@ -17,20 +12,18 @@ rule get_data:
 
 	shell:
 		"""
-		wget http://homes.di.unimi.it/valentini/DATA/Mendelian/{params.file}.rda  -O input/{wildcards.data}.rda 	"""
+		wget http://homes.di.unimi.it/valentini/DATA/Mendelian/{params.file}.rda  -O input/{wildcards.data}.rda
+		"""
 
 
 # cannot access snakemake object via snakemake@params[['name']] or input[[1]], hard coded 'input/Mendelian_1-10'
 rule convert_data:
 	input:
 		'input/{data}.rda'
-
 	output:
 		'input/{data}.txt'
-	params: 
-		name = 'input/{data}'
-	shell:
-		"Rscript scripts/convert_data.R"
+	script:
+		"scripts/convert_data.R"
 
 # makes sense to merge with get_data using r
 rule split_data:
@@ -71,4 +64,4 @@ rule run_parSMURF:
 	shell:
 		"""
 		parSMURF1 --cfg {input.config}
-	"""
+		"""

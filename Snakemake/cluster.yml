@@ -1,0 +1,7 @@
+__default__:
+   time: '00:10'
+   threads: 1
+   mem: 2000
+   queue: medium
+   error: 'logs/%x_%j_%N.err'
+   output: 'logs/%x_%j_%N.log'
