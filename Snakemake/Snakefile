@@ -1,67 +1,33 @@
-FILES = ['features','folds','labels']
+configfile: "Utils/features_config.json"
+
 rule all:
-	input:
-		'output/{data}_predictions.txt'
-
-rule get_data:
-	input: 
-	output: 
-		"input/{data}.rda"
-	params: 
-		file = lambda wildcards, output: ''.join({wildcards.data}).replace('-',':')
-
-	shell:
-		"""
-		wget http://homes.di.unimi.it/valentini/DATA/Mendelian/{params.file}.rda  -O input/{wildcards.data}.rda
-		"""
-
-
-# cannot access snakemake object via snakemake@params[['name']] or input[[1]], hard coded 'input/Mendelian_1-10'
-rule convert_data:
-	input:
-		'input/{data}.rda'
 	output:
-		'input/{data}.txt'
-	script:
-		"scripts/convert_data.R"
 
-# makes sense to merge with get_data using r
-rule split_data:
+
+rule get_feature_cpgIslandExt:
 	input:
-		'input/{data}.txt'
 	output:
-		expand('output/{{data}}.{file}.txt', file=FILES)
-
-	shell:
-		"""
-		cut -d$'\t' -f 1-26 < {input} > {output[0]};
-		cut -f27 < {input} > {output[1]};
-		cut -f28 < {input} > {output[2]}
-		"""
-
-
-rule generate_parsmurf_config:
-	input:
-		features="output/{data}.features.txt",
-		folds="output/{data}.folds.txt",
-		labels="output/{data}.labels.txt",
-		scaffold="scaffold.json"
-	output:
-		config="output/{data}.json"
+		path = "input/features/{data}/cpgIslandExt/cpgIslandExt.txt.gz"
 	params:
-		name = '{data}'
-	script:
-		"scripts/generate_parsmurf_config.py"
-
-
-# set PATH to parSMURF folder with the executable
-rule run_parSMURF:
-	input:
-		expand("output/{{data}}.{file}.txt", file=FILES),
-		config="output/{data}.json"
-	output:
-		'output/{data}_predictions.txt'
+		link=lambda wildcards, output: config[wildcards.data]['GCContent']+'cpgIslandExt.txt.gz'
 	shell:
 		"""
-		parSMURF1 --cfg {input.config}
+		echo 'rsync -a -P rsync://{params.link} {output.path}' ;
 		"""
+
+
+rule get_feature_priPhyloP46way:
+	input:
+	output:
+		 path = temp("input/features/{data}/priPhyloP46way/rsync.txt")
+
+	params:
+		link = lambda wildcards, output: config[wildcards.data]['priPhyloP46way'],
+		filter = 'chr[0-9]|chrX|chrY.*.phyloP30way.wigFix.gz'
+	script:
+		"scripts/generate_rsync.py"
+#	shell:
+#		"""
+#		ein Beispiel von einem anderen Feature
+#		bash input/features/hg38/cpgIslandExt/rsync.sh
+#		"""

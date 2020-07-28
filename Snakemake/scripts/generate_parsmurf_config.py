@@ -8,7 +8,7 @@ with open(snakemake.input.scaffold) as json_file:
     file['data']['dataFile'] = snakemake.input.features
     file['data']['labelFile'] = snakemake.input.labels
     file['data']['foldFile'] = snakemake.input.folds
-    file['data']['outFile'] = 'output/' + snakemake.params.name + '_predictions.txt'
+    file['data']['outFile'] = 'output/' + snakemake.params.name + '/' + snakemake.params.name + '_predictions.txt'
 
 with open(snakemake.output.config, 'w') as outfile:
     json.dump(file, outfile)
