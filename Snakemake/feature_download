@@ -1,0 +1,38 @@
+from snakemake.remote.FTP import RemoteProvider as FTPRemoteProvider
+# install python package ftputil
+
+FTP = FTPRemoteProvider()
+#CHROMS = ['chr'+str(s)  for s in list(range(1,25))]
+CHROMS = ['chr'+str(s)  for s in list(range(1,3))]
+
+configfile: "Utils/features_config.json"
+
+## I couldnt figure out how to use params.url in the input
+rule get_feature_cpgIslandExt:
+	input:
+#		FTP.remote('https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/cpgIslandExt.txt.gz', keep_local=True)
+		url = lambda wildcards: config[wildcards.data]['GCContent'],
+
+		FTP.remote('{input.url}/cpgIslandExt.txt.gz', keep_local=True),
+	#	url = config[wildcards.data]['GCContent']+'cpgIslandExt.txt.gz'
+	#	url = lambda wildcards: config[wildcards.data]['GCContent']
+
+
+	output:
+			"input/features/{data}/cpgIslandExt/cpgIslandExt.txt.gz"
+	params:
+	#	url = config[wildcards.data]['GCContent']+'cpgIslandExt.txt.gz'
+		url=lambda wildcards, output: config[wildcards.data]['GCContent']+'cpgIslandExt.txt.gz'
+	shell:
+		"""mv {input}  {output}"""
+
+
+
+rule get_feature_phyloP30way:
+	input:
+		FTP.remote(expand('https://hgdownload.soe.ucsc.edu/goldenPath/hg38/phyloP30way/hg38.30way.phyloP/{chrom}.phyloP30way.wigFix.gz', chrom=CHROMS), keep_local=True)
+	output:
+		expand('input/features/{{data}}/phyloP30way/{chrom}.phyloP30way.wigFix.gz', chrom=CHROMS)
+#	params:
+	#	url = lambda wildcards, output: config[wildcards.data]['priPhyloP46way']
+	shell: """mv {input} {output}"""
