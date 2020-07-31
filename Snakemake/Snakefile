@@ -1,31 +1,43 @@
 configfile: "Utils/features_config.json"
 
+import os
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+
+HTTP = HTTPRemoteProvider()
+
 rule all:
 	output:
 
-
 rule get_feature_cpgIslandExt:
 	input:
+		HTTP.remote("hgdownload.soe.ucsc.edu/goldenPath/{genome_release}/database/cpgIslandExt.txt.gz", keep_local=False)
 	output:
-		path = "input/features/{data}/cpgIslandExt/cpgIslandExt.txt.gz"
-	params:
-		link=lambda wildcards, output: config[wildcards.data]['GCContent']+'cpgIslandExt.txt.gz'
+		"input/features/{genome_release}/cpgIslandExt/cpgIslandExt.tsv.gz"
+	shell:
+		"zcat {input} | cut -f 2- | bgzip -c > {output}"
+
+
+
+rule get_feature_priPhyloP46way_singleContig:
+	input:
+		HTTP.remote("hgdownload.soe.ucsc.edu/goldenPath/{genome_release}/phyloP46way/primates/{chr}.phyloP46way.primate.wigFix.gz", keep_local=False)
+	output:
+		 temp("input/features/{genome_release}/priPhyloP46way/{chr}.phyloP46way.primate.wigFix.gz")
 	shell:
 		"""
-		echo 'rsync -a -P rsync://{params.link} {output.path}' ;
+		cp {input} {output}
 		"""
 
-
-rule get_feature_priPhyloP46way:
+rule get_feature_priPhyloP46way_all:
 	input:
+		expand("input/features/{{genome_release}}/priPhyloP46way/{chr}.phyloP46way.primate.wigFix.gz", chr=['chr1','chr2'])
 	output:
-		 path = temp("input/features/{data}/priPhyloP46way/rsync.txt")
+		"input/features/{genome_release}/priPhyloP46way/all.phyloP46way.primate.wigFix.gz"
+	shell:
+		"""
+		zcat {input} | bgzip -c > {output}
+		"""
 
-	params:
-		link = lambda wildcards, output: config[wildcards.data]['priPhyloP46way'],
-		filter = 'chr[0-9]|chrX|chrY.*.phyloP30way.wigFix.gz'
-	script:
-		"scripts/generate_rsync.py"
 #	shell:
 #		"""
 #		ein Beispiel von einem anderen Feature
